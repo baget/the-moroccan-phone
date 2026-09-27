@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#123c4a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet" />
+    <title>The Moroccan Phone</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="game-canvas" aria-label="The Moroccan Phone game canvas"></canvas>
+      <div id="reticle" aria-hidden="true" hidden></div>
+      <div id="float-layer" aria-hidden="true"></div>
+
+      <section id="hud" aria-live="polite" hidden>
+        <div class="hud-card score-card">
+          <span class="label">Score</span>
+          <strong id="score-value">0</strong>
+        </div>
+        <div class="hud-card phones-card">
+          <span class="label">Phones</span>
+          <div id="phones-left"></div>
+        </div>
+        <div id="streak" class="hud-pill" hidden>x2</div>
+        <div id="wind" class="hud-pill" hidden>
+          <span class="label">Wind</span>
+          <span id="wind-arrow">→</span>
+          <span id="wind-value">0</span>
+        </div>
+      </section>
+      <button id="mute-button" type="button" aria-label="Toggle sound">🔊</button>
+      <div id="hint" hidden>Drag to aim &middot; let go to throw!</div>
+
+      <section id="title-screen" class="overlay">
+        <div class="panel">
+          <div class="logo">
+            <span class="logo-small">The</span>
+            <span class="logo-big">Moroccan</span>
+            <span class="logo-big accent">Phone</span>
+          </div>
+          <p class="tagline">One old flip-phone. One big nose. Ten throws.</p>
+          <ul class="how">
+            <li><b>Drag</b> to aim, <b>let go</b> to throw</li>
+            <li><b>Nose</b> = nosebleed + big points &amp; combo</li>
+            <li>Anywhere else = scratches, bruises, combo lost</li>
+          </ul>
+          <button id="play-button" class="big-button" type="button">Throw!</button>
+          <p class="best">Best: <span id="best-title">0</span></p>
+        </div>
+      </section>
+
+      <section id="end-screen" class="overlay" hidden>
+        <div class="panel">
+          <h2 id="end-rating">Nosebleed Legend</h2>
+          <div class="final-score"><span id="end-score">0</span><small>points</small></div>
+          <div class="stats">
+            <div><strong id="end-nose">0</strong><span>nose hits</span></div>
+            <div><strong id="end-scratch">0</strong><span>scratches</span></div>
+            <div><strong id="end-combo">0</strong><span>best combo</span></div>
+          </div>
+          <p id="end-best" class="best"></p>
+          <button id="again-button" class="big-button" type="button">Again!</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
