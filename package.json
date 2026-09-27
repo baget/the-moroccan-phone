@@ -12,7 +12,6 @@
     "inspect:canvas": "node scripts/inspect-threejs-canvas.mjs"
   },
   "dependencies": {
-    "lil-gui": "^0.21.0",
     "three": "^0.184.0"
   },
   "devDependencies": {
