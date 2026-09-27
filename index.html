@@ -51,6 +51,10 @@
           </ul>
           <button id="play-button" class="big-button" type="button">Throw!</button>
           <p class="best">Best: <span id="best-title">0</span></p>
+          <section id="title-scores" class="scoreboard" aria-labelledby="title-scores-heading" hidden>
+            <h3 id="title-scores-heading">Top scores</h3>
+            <ol id="title-scores-list" class="score-list"></ol>
+          </section>
         </div>
       </section>
 
@@ -64,6 +68,14 @@
             <div><strong id="end-combo">0</strong><span>best combo</span></div>
           </div>
           <p id="end-best" class="best"></p>
+          <label id="name-entry" class="name-entry" hidden>
+            <span>Your name</span>
+            <input id="name-input" type="text" maxlength="12" autocomplete="nickname" enterkeyhint="done" spellcheck="false" />
+          </label>
+          <section id="end-scores" class="scoreboard" aria-labelledby="end-scores-heading" hidden>
+            <h3 id="end-scores-heading">Top scores</h3>
+            <ol id="end-scores-list" class="score-list"></ol>
+          </section>
           <button id="again-button" class="big-button" type="button">Again!</button>
         </div>
       </section>

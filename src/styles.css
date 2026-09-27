@@ -416,6 +416,135 @@ body {
   opacity: 0.65;
 }
 
+.name-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 0;
+  font-weight: 900;
+}
+
+.name-entry[hidden] {
+  display: none;
+}
+
+.name-entry span {
+  flex: none;
+  font-size: 0.85rem;
+}
+
+#name-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  padding: 6px 12px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: 900 1rem 'Nunito', sans-serif;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#name-input:focus {
+  outline: 3px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.scoreboard {
+  margin: 12px 0 14px;
+  text-align: left;
+}
+
+.scoreboard h3 {
+  margin: 0 0 6px;
+  font-family: 'Lilita One', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--teal);
+  text-align: center;
+}
+
+.score-list {
+  max-height: 172px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.score-list li {
+  display: grid;
+  grid-template-columns: 1.8em 1fr auto 3.6em;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 0.92rem;
+}
+
+.score-list li:nth-child(even) {
+  background: rgba(22, 112, 122, 0.08);
+}
+
+.score-list li.current {
+  background: var(--gold);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.score-rank {
+  opacity: 0.6;
+  text-align: right;
+}
+
+.score-list li:nth-child(1) .score-rank::before {
+  content: '🥇';
+}
+
+.score-list li:nth-child(2) .score-rank::before {
+  content: '🥈';
+}
+
+.score-list li:nth-child(3) .score-rank::before {
+  content: '🥉';
+}
+
+.score-list li:nth-child(-n + 3) .score-rank {
+  font-size: 0;
+  opacity: 1;
+}
+
+.score-list li:nth-child(-n + 3) .score-rank::before {
+  font-size: 1rem;
+}
+
+.score-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.score-nose {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+
+.score-points {
+  font-family: 'Lilita One', sans-serif;
+  font-weight: 400;
+  font-size: 1.05rem;
+  text-align: right;
+}
+
+#title-scores .score-list {
+  max-height: none;
+}
+
 @keyframes float-up {
   0% {
     opacity: 0;
