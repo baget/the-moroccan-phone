@@ -1,3 +1,5 @@
+import type { ScoreEntry } from './Scoreboard';
+
 function el<T extends HTMLElement = HTMLElement>(selector: string): T {
   const found = document.querySelector<T>(selector);
   if (!found) throw new Error(`Missing ${selector}`);
@@ -17,6 +19,7 @@ export class Hud {
   readonly playButton = el<HTMLButtonElement>('#play-button');
   readonly againButton = el<HTMLButtonElement>('#again-button');
   readonly muteButton = el<HTMLButtonElement>('#mute-button');
+  readonly nameInput = el<HTMLInputElement>('#name-input');
 
   private readonly hud = el('#hud');
   private readonly score = el('#score-value');
@@ -31,10 +34,38 @@ export class Hud {
   private readonly title = el('#title-screen');
   private readonly end = el('#end-screen');
   private readonly bestTitle = el('#best-title');
+  private readonly titleScores = el('#title-scores');
+  private readonly titleScoresList = el('#title-scores-list');
+  private readonly endScores = el('#end-scores');
+  private readonly endScoresList = el('#end-scores-list');
+  private readonly nameEntry = el('#name-entry');
   private lastScore = -1;
 
   setBest(best: number): void {
     this.bestTitle.textContent = String(best);
+  }
+
+  /** Title screen shows the top 5; the end screen shows all 10 and marks this round's row. */
+  setScores(entries: readonly ScoreEntry[], currentId: string | null): void {
+    this.titleScores.hidden = entries.length === 0;
+    this.titleScoresList.replaceChildren(...entries.slice(0, 5).map((e, i) => scoreRow(e, i, false)));
+    this.endScores.hidden = entries.length === 0;
+    this.endScoresList.replaceChildren(...entries.map((e, i) => scoreRow(e, i, e.id === currentId)));
+  }
+
+  /** Shows the name box only when this round made the table. */
+  setNameEntry(name: string | null): void {
+    this.nameEntry.hidden = name === null;
+    if (name !== null) this.nameInput.value = name;
+  }
+
+  renameCurrentRow(name: string): void {
+    const cell = this.endScoresList.querySelector('.current .score-name');
+    if (cell) cell.textContent = name;
+  }
+
+  scrollCurrentRowIntoView(): void {
+    this.endScoresList.querySelector('.current')?.scrollIntoView({ block: 'nearest' });
   }
 
   showTitle(): void {
@@ -115,6 +146,25 @@ export class Hud {
     this.floatLayer.appendChild(node);
     window.setTimeout(() => node.remove(), 1300);
   }
+}
+
+function scoreRow(entry: ScoreEntry, index: number, current: boolean): HTMLLIElement {
+  const row = document.createElement('li');
+  if (current) row.className = 'current';
+  const cell = (className: string, text: string) => {
+    const span = document.createElement('span');
+    span.className = className;
+    span.textContent = text;
+    return span;
+  };
+  row.append(
+    cell('score-rank', `${index + 1}`),
+    cell('score-name', entry.name),
+    cell('score-nose', `👃 ${entry.noseHits}`),
+    cell('score-points', String(entry.score)),
+  );
+  row.title = `Best combo x${entry.bestCombo} · ${new Date(entry.date).toLocaleDateString()}`;
+  return row;
 }
 
 function rating(noseHits: number): string {

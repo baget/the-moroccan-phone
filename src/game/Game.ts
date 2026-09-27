@@ -8,6 +8,7 @@ import { Head, type HitZone } from '../entities/Head';
 import { AudioSystem } from '../systems/AudioSystem';
 import { Hud } from '../systems/Hud';
 import { ParticleFx } from '../systems/ParticleFx';
+import { Scoreboard } from '../systems/Scoreboard';
 import { createSeededRandom } from '../utils/random';
 
 type GameState = 'title' | 'aiming' | 'flying' | 'gameover';
@@ -47,6 +48,7 @@ export class Game {
   private readonly phone = new FlipPhone();
   private readonly audio = new AudioSystem();
   private readonly hud = new Hud();
+  private readonly scoreboard = new Scoreboard();
   private readonly input: AimInput;
   private readonly fx: ParticleFx;
   private readonly loop = new Loop(
@@ -66,6 +68,7 @@ export class Game {
   private bestCombo = 0;
   private wind = 0;
   private best = 0;
+  private currentEntryId: string | null = null;
   private hasThrown = false;
   private resolved = false;
   private lastZone: HitZone | 'miss' | null = null;
@@ -101,7 +104,9 @@ export class Game {
     } catch {
       this.best = 0;
     }
+    this.best = Math.max(this.best, this.scoreboard.bestScore);
     this.hud.setBest(this.best);
+    this.hud.setScores(this.scoreboard.top, null);
 
     this.createScene();
     this.onResize();
@@ -173,11 +178,24 @@ export class Game {
       this.audio.setMuted(this.muted);
       this.hud.setMuted(this.muted);
     });
+    this.hud.nameInput.addEventListener('input', () => {
+      if (!this.currentEntryId) return;
+      this.hud.renameCurrentRow(this.scoreboard.rename(this.currentEntryId, this.hud.nameInput.value));
+      this.hud.setScores(this.scoreboard.top, this.currentEntryId);
+    });
+    this.hud.nameInput.addEventListener('blur', () => {
+      // Show the cleaned-up name (trimmed, or "Player" if left empty).
+      if (this.currentEntryId) this.hud.nameInput.value = this.scoreboard.name;
+    });
+    this.hud.nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.hud.nameInput.blur();
+    });
     this.input.onPress = () => {
       void this.audio.unlock();
     };
     this.input.onRelease = (x, y) => this.throwAtScreen(x, y);
     window.addEventListener('keydown', (e) => {
+      if (e.target instanceof HTMLInputElement) return;
       if ((e.key === 'Enter' || e.key === ' ') && this.state !== 'aiming' && this.state !== 'flying') {
         e.preventDefault();
         begin();
@@ -212,6 +230,8 @@ export class Game {
   // ---------- round flow ----------
 
   private startRound(): void {
+    this.currentEntryId = null;
+    this.hud.nameInput.blur();
     this.score = 0;
     this.phonesUsed = 0;
     this.noseHits = 0;
@@ -309,6 +329,14 @@ export class Game {
       }
       this.hud.setBest(this.best);
     }
+    const entry = this.scoreboard.add({
+      score: this.score,
+      noseHits: this.noseHits,
+      bestCombo: this.bestCombo,
+    });
+    this.currentEntryId = entry?.id ?? null;
+    this.hud.setScores(this.scoreboard.top, this.currentEntryId);
+    this.hud.setNameEntry(entry ? entry.name : null);
     this.audio.fanfare(this.noseHits >= 3);
     this.hud.showEnd({
       score: this.score,
@@ -318,6 +346,7 @@ export class Game {
       best: this.best,
       newBest,
     });
+    this.hud.scrollCurrentRowIntoView();
   }
 
   // ---------- hits ----------
