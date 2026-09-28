@@ -446,46 +446,42 @@ export class Head {
 
   // ---------- arms ----------
 
-  /** Arms in a raised "come at me" pose: elbows out, fists up beside the face. */
+  /** Relaxed arms hanging at the sides, elbows slightly bent. */
   private buildArms(shirtMap: THREE.Texture | null): void {
     const sleeveMat = new THREE.MeshStandardMaterial({ map: shirtMap, roughness: 0.8 });
     const skinMat = new THREE.MeshStandardMaterial({ color: SKIN_SHADE, roughness: 0.65 });
-    const fistMat = new THREE.MeshStandardMaterial({ color: SKIN, roughness: 0.6 });
+    const handMat = new THREE.MeshStandardMaterial({ color: SKIN, roughness: 0.6 });
     for (const side of [-1, 1]) {
       const shoulder = new THREE.Group();
-      shoulder.position.set(side * 1.1, -1.75, -0.15);
+      shoulder.position.set(side * 1.3, -1.85, -0.2);
       this.group.add(shoulder);
       const cap = new THREE.Mesh(new THREE.SphereGeometry(0.34, 20, 14), sleeveMat);
       cap.name = 'body';
       shoulder.add(cap);
 
-      const elbowPos = new THREE.Vector3(side * 0.5, -0.55, 0.15);
+      const elbowPos = new THREE.Vector3(side * 0.22, -1.15, -0.05);
       shoulder.add(this.limb(new THREE.Vector3(), elbowPos, 0.27, sleeveMat));
 
       const elbow = new THREE.Group();
       elbow.position.copy(elbowPos);
       shoulder.add(elbow);
-      const handPos = new THREE.Vector3(side * 0.02, 1.15, 0.35);
+      const handPos = new THREE.Vector3(side * 0.05, -1.05, 0.18);
       elbow.add(this.limb(new THREE.Vector3(), handPos, 0.2, skinMat));
 
-      // Fist with a thumb and knuckle bumps.
-      const fist = new THREE.Group();
-      fist.position.copy(handPos);
-      elbow.add(fist);
-      const palm = new THREE.Mesh(new THREE.SphereGeometry(0.26, 20, 14), fistMat);
-      palm.scale.set(0.95, 1, 0.85);
+      // Relaxed open hand with a thumb on the front.
+      const hand = new THREE.Group();
+      hand.position.copy(handPos);
+      elbow.add(hand);
+      const palm = new THREE.Mesh(new THREE.SphereGeometry(0.24, 20, 14), handMat);
+      palm.scale.set(0.75, 1.2, 0.95);
+      palm.position.y = -0.12;
       palm.name = 'body';
       palm.castShadow = true;
-      fist.add(palm);
-      for (let k = 0; k < 4; k += 1) {
-        const knuckle = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), fistMat);
-        knuckle.position.set(side * -0.06, 0.16 - k * 0.1, 0.19);
-        fist.add(knuckle);
-      }
-      const thumb = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.14, 4, 8), fistMat);
-      thumb.position.set(side * -0.19, 0.02, 0.12);
-      thumb.rotation.z = side * 0.5;
-      fist.add(thumb);
+      hand.add(palm);
+      const thumb = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.16, 4, 8), handMat);
+      thumb.position.set(side * -0.05, -0.12, 0.2);
+      thumb.rotation.x = 0.35;
+      hand.add(thumb);
 
       this.arms.push({ side, shoulder, elbow });
     }
@@ -503,20 +499,20 @@ export class Head {
     return mesh;
   }
 
-  /** Idle bounce, sway follow-through, and a flinch toward the face on hits. */
+  /** Idle swing, sway follow-through, and a flinch (arms jerk up and in) on hits. */
   private updateArms(animate: boolean, sway: number): void {
     const pain = Math.min(1, this.painTimer / 0.6);
-    const bounce = animate ? Math.sin(this.swayTime * this.swaySpeed * 3.4) : 0;
+    const swing = animate ? Math.sin(this.swayTime * this.swaySpeed * 1.7) : 0;
     for (const { side, shoulder, elbow } of this.arms) {
       // Arms lag behind the sway and get knocked by the recoil springs.
-      const flail = this.rot.y * 0.25 + this.rot.z * 0.3 - sway * 0.35;
+      const flail = this.rot.y * 0.2 + this.rot.z * 0.25 - sway * 0.3;
       shoulder.rotation.set(
-        -pain * 0.35 + this.rot.x * 0.15,
+        side * swing * 0.06 - pain * 0.45 + this.rot.x * 0.15,
         0,
-        side * (bounce * 0.05 - pain * 0.25) + flail,
+        side * pain * 0.2 + flail,
       );
-      // Flinch: forearms swing in to cover the face.
-      elbow.rotation.set(-pain * 0.3, 0, side * (pain * 0.55 + bounce * 0.04));
+      // Flinch: forearms lift forward.
+      elbow.rotation.set(-0.1 - pain * 0.7, 0, -side * pain * 0.2);
     }
   }
 
